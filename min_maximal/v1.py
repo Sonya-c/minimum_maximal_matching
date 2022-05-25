@@ -1,27 +1,26 @@
-from graph import Graph, remove_adj
+from graph import Graph
 
-def min_maximal(graph: Graph, match=[]):
-
+def min_maximal(graph: Graph, match=[], min_match=[]):
+  
   if (graph.edges_len() == 0):
     # Hay mas vertices que analizar
-    print(match)
-    return 
-
+    if (len(min_match) == 0 or len(match) < len(min_match)):
+      return match
   else:
     
-    for edge in graph.get_edges():
-      
-      graph_i = Graph(graph)
+    for edge in graph.get_edges(): # (1) seleccionar un vertice
       match_i = list(match)
-
-      # seleccionar un vertice y marcarlo
-      graph_i.remove_edge(edge)
-      match_i.append(edge)
+      graph_i = Graph(
+        dict(graph.get_nodes()),
+        list(graph.get_edges())
+      )
       
-      # remover todas las aristas adyacentes
-      # a los estremos de la aristas
-      remove_adj(edge[0], graph_i)
-      remove_adj(edge[1], graph_i)
+      # añadir la aristas al emparejamiento
+      # y eliminar esa arista del grafo
+      match_i.append(edge)
+      graph_i.remove_node(edge[0])
+      graph_i.remove_node(edge[1])
 
-      # repetir
-      min_maximal(graph_i, match_i)
+      min_match = min_maximal(graph_i, match_i, min_match)
+
+  return min_match
